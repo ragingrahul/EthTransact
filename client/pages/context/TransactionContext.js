@@ -1,0 +1,98 @@
+import React, { useEffect, useState, useRef } from "react"
+import { ethers } from "ethers"
+import Web3Modal from "web3modal"
+import { transactionAddress, transactionABI } from "../../constants"
+
+export const TransactionContext = React.createContext()
+
+
+export const TransactionProvider = ({ children }) => {
+
+    const web3ModalRef = useRef()
+
+    const [walletConnected, setWalletConnected] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
+    const [formData,setFormData]=useState({addressTo:"",amount:"",keyword:"",messsage:""})
+    const [transactionCount,setTransactionCount]=useState(localStorage.getItem('transactionCount'))
+
+    const handleChange=(e,name)=>{
+        setFormData((prevState)=>({ ...prevState,[name]:e.target.value}))
+    }
+
+    const getEhereumContract = async () => {
+        const provider = await getProviderOrSigner()
+        const signer = await getProviderOrSigner(true)
+        const transactionContract = new ethers.Contract(transactionAddress, transactionABI, signer)
+
+        return transactionContract
+    }
+
+    const getProviderOrSigner = async (needSigner = false) => {
+        const provider = await web3ModalRef.current.connect()
+        const web3Provider = new ethers.providers.Web3Provider(provider)
+
+        const { chainId } = await web3Provider.getNetwork()
+        if (chainId !== 5) {
+            window.alert("Change the network to Goerli")
+            throw new Error("Change network to Goerli")
+        }
+
+        if (needSigner) {
+            const signer = await web3Provider.getSigner()
+            return signer
+        }
+
+        return web3Provider
+    }
+
+    const connectWallet = async () => {
+        try {
+            await getProviderOrSigner()
+            setWalletConnected(true)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    const sendTransaction=async()=>{
+        try {
+            const {addressTo,amount,keyword,message}=formData
+            const parsedAmount=ethers.utils.parseEther(amount)
+            
+            const transactionContract=await getEhereumContract()
+
+            const tx=await transactionContract.addToBlockchain(addressTo,message,keyword,{value:parsedAmount})
+            setIsLoading(true)
+            console.log(`Loading-${tx.hash}`)
+            await tx.wait()
+            setIsLoading(false)
+            console.log(`Success-${tx.hash}`)
+            
+            const transactionCount=await transactionContract.getAllTransactions()
+            setTransactionCount(transactionCount.toNumber())
+
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    useEffect(() => {
+
+        if (!walletConnected) {
+
+            web3ModalRef.current = new Web3Modal({
+                network: "goerli",
+                providerOptions: {},
+                disableInjectedProvider: false,
+            })
+            connectWallet()
+        }
+
+    }, [walletConnected])
+
+    return (
+        <TransactionContext.Provider value={{connectWallet,walletConnected,formData,setFormData,handleChange,sendTransaction}}>
+            {children}
+        </TransactionContext.Provider>
+    )
+}
