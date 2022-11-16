@@ -13,7 +13,8 @@ export const TransactionProvider = ({ children }) => {
     const [walletConnected, setWalletConnected] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const [formData,setFormData]=useState({addressTo:"",amount:"",keyword:"",messsage:""})
-    const [transactionCount,setTransactionCount]=useState(localStorage.getItem('transactionCount'))
+    const [transactionCount,setTransactionCount]=useState(0)
+    const [currentAccount,setCurrentAccount]=useState("")
 
     const handleChange=(e,name)=>{
         setFormData((prevState)=>({ ...prevState,[name]:e.target.value}))
@@ -47,7 +48,10 @@ export const TransactionProvider = ({ children }) => {
 
     const connectWallet = async () => {
         try {
-            await getProviderOrSigner()
+            const signer=await getProviderOrSigner(true)
+            const add=await signer.getAddress()
+            console.log(add)
+            setCurrentAccount(add)
             setWalletConnected(true)
         } catch (error) {
             console.error(error)
@@ -91,7 +95,7 @@ export const TransactionProvider = ({ children }) => {
     }, [walletConnected])
 
     return (
-        <TransactionContext.Provider value={{connectWallet,walletConnected,formData,setFormData,handleChange,sendTransaction}}>
+        <TransactionContext.Provider value={{connectWallet,walletConnected,formData,setFormData,handleChange,sendTransaction,currentAccount}}>
             {children}
         </TransactionContext.Provider>
     )

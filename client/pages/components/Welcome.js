@@ -6,6 +6,7 @@ import styles from "../../styles/Home.module.css"
 import {Loader} from './'
 import { useState,useContext,useEffect,useRef } from "react"
 import { TransactionContext,TransactionProvider } from "../context/TransactionContext"
+import { shortenAddress } from "../../constants/shortenAddress"
 const commonStyles = "min-h-[70px] sm:px-0 px-2 sm:min-w-[120px] flex justify-center items-center border-[0.5px] border-gray-400 text-sm font-light text-white";
 
 
@@ -25,7 +26,7 @@ const Input=({placeholder,name,type,value,handleChange})=>{
 
 const Welcome=()=>{
 
-    const{connectWallet,walletConnected,formData,sendTransaction,handleChange}=useContext(TransactionContext)
+    const{connectWallet,walletConnected,formData,sendTransaction,handleChange,currentAccount}=useContext(TransactionContext)
 
     const [isLoading,setIsLoading] =useState(false)
 
@@ -42,9 +43,9 @@ const Welcome=()=>{
     }
 
     return(
-        <div className="flex w-full justify-center items-center">
-            <div className="flex md:flex-row flew-col items-start justify-between md:p-20 py-12 px-4">
-                <div className="flex flex-1 justify-start items start flex-col md:mr-10">
+        <div className="flex flex-col w-full justify-center items-center">
+            <div className="flex flew-col items-start justify-between md:p-20 py-12 px-4">
+                <div className="flex flex-col flex-1 justify-start items start  md:mr-10">
                     <h1 className={`text-3xl sm:text-5xl text-white ${styles.textgradient} py-1`}>
                         Send Crypto <br /> across the world
                     </h1>
@@ -77,7 +78,7 @@ const Welcome=()=>{
                     </div>
                 </div>
                 <div className="flex flex-1 flex-col justify-start items-center w-full md:mt-0 mt-10">
-                    <div className={`p-3 flex justify-end items-start flex-col rounded-xl h-40 sm:w-72 w-full my-5 ${styles.ethcard} ${styles.whiteglassmorphism}`}>
+                    <div className={`p-3 flex flex-col justify-end items-start  rounded-xl h-40 sm:w-72 w-full my-5 ${styles.ethcard} ${styles.whiteglassmorphism}`}>
                         <div className="flex justify-between flex-col w-full h-full">
                             <div className="flex justify-between items-start">
                                 <div className="w-10 h-10 rounded-full border-2 border-white flex justify-center items-center">
@@ -87,7 +88,7 @@ const Welcome=()=>{
                             </div>
                             <div>
                                 <p className="text-white font-light text-sm">
-                                    Address
+                                    {shortenAddress(currentAccount)}
                                 </p>
                                 <p className="text-white font-semibold text-base mt-1">
                                     Ethereum
