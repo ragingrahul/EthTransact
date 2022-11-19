@@ -7,6 +7,11 @@ import { TransactionProvider } from './context/TransactionContext'
 export default function Home() {
   return (
     <TransactionProvider>
+      <Head>
+        <title>Krypt</title>
+        <meta name='description' content='Krypt'/>
+        <link rel='icon' href='/favicon.ico'/>
+      </Head>
       <div className="min-h-screen">
         <div className={styles.gradientbgwelcome}>
           <Navbar />
