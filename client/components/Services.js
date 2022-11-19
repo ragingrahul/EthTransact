@@ -1,7 +1,7 @@
 import { BsShieldFillCheck } from 'react-icons/bs'
 import { BiSearchAlt } from 'react-icons/bi'
 import { RiHeart2Fill } from 'react-icons/ri'
-import styles from "../../styles/Home.module.css"
+import styles from "../styles/Home.module.css"
 
 const ServiceCard = ({ color, title, icon, subtitle }) => {
     return (

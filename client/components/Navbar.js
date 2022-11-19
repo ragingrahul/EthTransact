@@ -1,7 +1,7 @@
 import React from "react";
 import { HiMenuAlt4 } from "react-icons/hi";
 import { AiOutlineClose } from "react-icons/ai";
-import styles from "../../styles/Home.module.css"
+import styles from "../styles/Home.module.css"
 
 
 const NavBarItem = ({ title, classprops }) => (

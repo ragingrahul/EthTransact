@@ -1,9 +1,9 @@
 import React, { useContext } from 'react'
 import { TransactionContext } from '../context/TransactionContext'
-import styles from "../../styles/Home.module.css"
+import styles from "../styles/Home.module.css"
 
-import dummyData from '../../constants/dummyData'
-import { shortenAddress } from '../../constants/shortenAddress'
+import dummyData from '../constants/dummyData'
+import { shortenAddress } from '../constants/shortenAddress'
 import useFetch from '../hooks/useFetch'
 
 const TransactionsCard = ({ addressTo, addressFrom, timestamp, message, keyword, amount, url }) => {

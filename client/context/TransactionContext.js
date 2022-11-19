@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react"
 import { ethers } from "ethers"
 import Web3Modal from "web3modal"
-import { transactionAddress, transactionABI } from "../../constants"
+import { transactionAddress, transactionABI } from "../constants"
 
 export const TransactionContext = React.createContext()
 

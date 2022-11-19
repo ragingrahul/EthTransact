@@ -1,12 +1,12 @@
 import { AiFillPlayCircle } from "react-icons/ai"
 import {SiEthereum} from "react-icons/si"
 import {BsInfoCircle} from "react-icons/bs"
-import styles from "../../styles/Home.module.css"
+import styles from "../styles/Home.module.css"
 
-import {Loader} from './'
+import {Loader} from '.'
 import { useState,useContext,useEffect,useRef } from "react"
 import { TransactionContext,TransactionProvider } from "../context/TransactionContext"
-import { shortenAddress } from "../../constants/shortenAddress"
+import { shortenAddress } from "../constants/shortenAddress"
 const commonStyles = "min-h-[70px] sm:px-0 px-2 sm:min-w-[120px] flex justify-center items-center border-[0.5px] border-gray-400 text-sm font-light text-white";
 
 
