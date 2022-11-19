@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   env:{
-    NEXT_GIPHY_API:process.env.NEXT_GIPHY_API,
+    NEXT_GIPHY_API:"YSfI9YLoM04H5tzkr1ohzukftkJPAgnK",
   },
 }
 
