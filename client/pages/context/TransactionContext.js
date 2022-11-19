@@ -13,11 +13,36 @@ export const TransactionProvider = ({ children }) => {
     const [walletConnected, setWalletConnected] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const [formData,setFormData]=useState({addressTo:"",amount:"",keyword:"",messsage:""})
+    
     const [transactionCount,setTransactionCount]=useState(0)
+    const [transactions,setTransactions]=useState([])
+    
+    
     const [currentAccount,setCurrentAccount]=useState("")
 
     const handleChange=(e,name)=>{
         setFormData((prevState)=>({ ...prevState,[name]:e.target.value}))
+    }
+
+    const getAllTransactions=async()=>{
+        try {
+            const transactionContract=await getEhereumContract()
+            const availableTransactions=await transactionContract.getAllTransactions()
+            
+            const structuredTransactions=availableTransactions.map((transaction)=>({
+                addressTo:transaction.receiver,
+                addressFrom:transaction.sender,
+                timestamp:new Date(transaction.timestamp.toNumber()*1000).toLocaleString(),
+                message:transaction.message,
+                keyword:transaction.keyword,
+                amount:parseInt(transaction.amount._hex)/(10**18)
+            }))
+            
+            console.log(structuredTransactions)
+            setTransactions(structuredTransactions)
+        } catch (error) {
+            console.error(error)
+        }
     }
 
     const getEhereumContract = async () => {
@@ -46,6 +71,17 @@ export const TransactionProvider = ({ children }) => {
         return web3Provider
     }
 
+    const checkIfTransactionExist=async()=>{
+        try {
+            const transactionContract=await getEhereumContract()
+            const transactionCount=await transactionContract.getTransactionCount()
+
+            window.localStorage.setItem("transactionCount",transactionCount)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
     const connectWallet = async () => {
         try {
             const signer=await getProviderOrSigner(true)
@@ -53,6 +89,7 @@ export const TransactionProvider = ({ children }) => {
             console.log(add)
             setCurrentAccount(add)
             setWalletConnected(true)
+            await getAllTransactions()
         } catch (error) {
             console.error(error)
         }
@@ -72,7 +109,7 @@ export const TransactionProvider = ({ children }) => {
             setIsLoading(false)
             console.log(`Success-${tx.hash}`)
             
-            const transactionCount=await transactionContract.getAllTransactions()
+            const transactionCount=await transactionContract.getTransactionCount()
             setTransactionCount(transactionCount.toNumber())
 
         } catch (error) {
@@ -81,7 +118,7 @@ export const TransactionProvider = ({ children }) => {
     }
 
     useEffect(() => {
-
+       
         if (!walletConnected) {
 
             web3ModalRef.current = new Web3Modal({
@@ -90,12 +127,14 @@ export const TransactionProvider = ({ children }) => {
                 disableInjectedProvider: false,
             })
             connectWallet()
+            setTransactionCount(localStorage.getItem("transactionCount"))
+            checkIfTransactionExist()
         }
 
-    }, [walletConnected])
+    }, [walletConnected,transactions])
 
     return (
-        <TransactionContext.Provider value={{connectWallet,walletConnected,formData,setFormData,handleChange,sendTransaction,currentAccount}}>
+        <TransactionContext.Provider value={{connectWallet,walletConnected,formData,setFormData,handleChange,sendTransaction,currentAccount,transactions,isLoading}}>
             {children}
         </TransactionContext.Provider>
     )
